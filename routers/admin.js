@@ -7,6 +7,10 @@ const Articles = require('../models/Articles')
 const Categories = require('../models/Categories')
 const Tags = require('../models/Tags')
 const Says = require('../models/Says')
+
+const upload = require('../utils/upload')
+const fs = require("fs");
+const path = require("path");
 // const { userList } = require('../db/index')
 
 // 借用 express 开启路由
@@ -303,6 +307,69 @@ admin.post('/admin/says/delete', (req, res) => {
         })
 })
 
-require('./file-upload')(admin)
+// require('./file-upload')(admin)
 
+// 上传文章封面图片
+admin.post('/admin/img/upload', async (req, res) => {
+    let uploadPath = 'coverImg'
+    await upload.uploadFn(req, res, uploadPath)
+    const file = req.file
+    console.log(file)
+    if(file) {
+        res.send({
+            status: 0,
+            data: {
+                name: file.filename,
+                url: 'http://localhost:3001/upload/' + uploadPath + '/' + file.filename
+            }
+        })
+    } else {
+        res.send({status: 1, msg: '上传图片失败，请重新尝试！'})
+    }
+})
+
+// 删除图片
+admin.post('/admin/img/delete', (req, res) => {
+    const {name} = req.body
+    console.log(req.body)
+    fs.unlink(path.join(__dirname,'..','public/upload/coverImg/', name), (err) => {
+        if (err) {
+            console.log(err)
+            res.send({status: 1, msg: '删除文件失败'})
+        } else {
+            res.send({status: 0})
+        }
+    })
+})
+
+// 上传头像
+admin.post('/admin/users/avatar', async (req, res) => {
+    let uploadPath = 'avatar'
+    await upload.uploadFn(req, res, uploadPath)
+    const file = req.file
+    console.log(file)
+    if(file) {
+        res.send({
+            status: 0,
+            data: {
+                name: file.filename,
+                url: 'http://localhost:3001/upload/' + uploadPath + '/' + file.filename
+            }
+        })
+    }
+})
+
+// 删除用户头像
+admin.post('/admin/users/deleteAvatar', (req, res) => {
+    const {name} = req.body
+    console.log(req.body)
+    fs.unlink(path.join(__dirname,'..','public/upload/avatar/', name), (err) => {
+        if (err) {
+            console.log(err)
+            res.send({status: 1, msg: '删除文件失败'})
+        } else {
+            res.send({status: 0})
+        }
+    })
+})
 module.exports = admin
