@@ -34,6 +34,14 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: '',
         maxlength: 100
+    },
+    createTime: {
+        type: Date,
+        default: Date.now
+    },
+    authority: {
+        type: Boolean,
+        default: true // 默认 true 不禁用，有权限
     }
 })
 

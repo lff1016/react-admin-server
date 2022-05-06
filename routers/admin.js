@@ -37,6 +37,32 @@ admin.post('/login',(req, res) => {
   })
 })
 
+
+// 获取用户列表
+admin.get('/admin/users/list', (req, res) => {
+    Users.find({})
+        .then(users => {
+            res.send({status: 0, data: users})
+        })
+        .catch(error => {
+            console.log('获取用户列表错误', error)
+            res.send({status: 1, msg: '获取用户列表异常, 请重新尝试'})
+        })
+})
+
+// 更改用户权限
+admin.post('/admin/users/auth', (req, res) => {
+    const {_id, auth} = req.body
+    console.log(req.body)
+    Users.findOneAndUpdate({_id}, {authority: !auth})
+        .then(old => {
+            res.send({status: 0})
+        })
+        .catch(error => {
+            console.log(error)
+            res.send({status: 1, msg: '修改权限异常，请重新尝试'})
+        })
+})
 // 获取文章列表
 admin.get('/admin/article/list', async (req, res) => {
     const articles = await Articles.find({}).populate('category').populate('tags')
