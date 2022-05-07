@@ -26,8 +26,8 @@ const UserSchema = new mongoose.Schema({
     },
     // 头像
     avatar: {
-        type: String,
-        default:  '/public/img/avatar-default.png'
+        type: Array,
+        default: ['avatar-default-man.png']
     },
     // 博客描述
     bio: {

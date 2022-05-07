@@ -18,9 +18,9 @@ const admin = express.Router()
 
 // login 登录界面
 admin.post('/login',(req, res) => {
-  const {username, password} = req.body
+  const {email, password} = req.body
   // 根据 username, password 查询用户
-  Users.findOne({username, password: md5(password)})
+  Users.findOne({email, password: md5(password)})
       .then(user => {
         if (user) { // 如果用户存在，登录成功
           // 生成一个cookie：userid：user._id，并交给浏览器保存
@@ -67,6 +67,75 @@ admin.post('/admin/users/auth', (req, res) => {
             res.send({status: 1, msg: '修改权限异常，请重新尝试'})
         })
 })
+
+// 获取某个用户的信息
+admin.get('/admin/user', (req, res) => {
+    const _id = req.query.id
+    Users.findOne({_id})
+        .then(user => {
+            res.send({status: 0, user})
+        })
+        .catch(error => {
+            console.log('查找用户错误', error)
+            res.send({status: 1, msg: '查找用户错误'})
+        })
+})
+
+// 修改用户信息
+admin.post('/admin/users/update', (req, res) => {
+    const userInfo = req.body
+    console.log(req.body)
+    Users.findOneAndUpdate({_id: userInfo._id}, {userInfo})
+        .then(user => {
+            console.log(user)
+            res.send({status: 0, data: user})
+        })
+        .catch(error => {
+            console.log('用户修改信息异常，请重试！', error)
+            res.send({status: 1, msg: '用户修改信息异常，请重试！'})
+        })
+})
+
+// 删除用户
+admin.post('/admin/users/delete', (req, res) => {
+    const {_id} = req.body
+    Users.findOneAndDelete({_id})
+        .then(user => {
+            console.log(user)
+            res.send({status: 0, data: user})
+        })
+        .catch(error => {
+            console.log('删除用户失败', error)
+            res.send({status: 1, msg: '删除用户异常，请重试!'})
+        })
+})
+
+// 修改用户角色
+// admin.post('/admin/users/role', (req, res) => {
+//     const {_id, role} = req.body
+//     Users.findOneAndUpdate({_id}, {role})
+//         .then(user => {
+//             res.send({status: 0})
+//         })
+//         .catch(error => {
+//             console.log(error)
+//             res.send({status: 1, msg: '修改用户角色失败，请重试！'})
+//         })
+// })
+
+// 修改用户名和角色
+admin.post('/admin/users/edit', (req, res) => {
+    const {_id, username, role} = req.body
+    Users.findOneAndUpdate({_id}, {username, role})
+        .then(user => {
+            res.send({status: 0})
+        })
+        .catch(error => {
+            console.log(error)
+            res.send({status: 1, msg: '修改用户失败，请重试！'})
+        })
+})
+
 // 获取文章列表
 admin.get('/admin/article/list', async (req, res) => {
     const articles = await Articles.find({}).populate('category').populate('tags')
