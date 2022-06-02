@@ -8,6 +8,7 @@ const morgan = require('morgan')
 require('./models/connect')
 
 const admin = require('./routers/admin')
+const home = require('./routers/home')
 
 // 创建服务器
 const app = express()
@@ -23,7 +24,8 @@ app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')))
 
 // 配置路由请求路径
-app.use('/', admin)
+app.use('/admin', admin)
+app.use('/home', home)
 // 配置 cookie
 app.use(cookieParser())
 

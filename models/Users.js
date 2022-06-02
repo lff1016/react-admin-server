@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const Joi = require('joi')
 const md5 = require('blueimp-md5')
 
 const UserSchema = new mongoose.Schema({
@@ -35,14 +34,15 @@ const UserSchema = new mongoose.Schema({
         default: '',
         maxlength: 100
     },
-    createTime: {
-        type: Date,
-        default: Date.now
-    },
     authority: {
         type: Boolean,
         default: true // 默认 true 不禁用，有权限
     }
+}, {
+    timestamps: {
+        createdAt: 'created',
+        updatedAt: 'updated'
+    },
 })
 
 // 定义 Model（与集合对应，操作集合）
