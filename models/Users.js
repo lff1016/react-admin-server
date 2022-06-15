@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 2,
-        maxlength: 10
+        maxlength: 12
     },
     email: {
         type: String,
@@ -15,13 +15,13 @@ const UserSchema = new mongoose.Schema({
         unique: true
     },
     password: {
-        type: String,
-        required: true,
+        type: String
     },
     role: {
         type: String,
         required: true,
-        enum: ['normal', 'admin']
+        enum: ['normal', 'admin'],
+        default: 'normal'
     },
     // 头像
     avatar: {
@@ -46,7 +46,7 @@ const UserSchema = new mongoose.Schema({
 })
 
 // 定义 Model（与集合对应，操作集合）
-const User = mongoose.model('User', UserSchema)
+const User = mongoose.model('Users', UserSchema)
 
 // 将用户信息验证抽离出来
 // const validUser = user => {
