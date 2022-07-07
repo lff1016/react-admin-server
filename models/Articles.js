@@ -35,7 +35,13 @@ const articleSchema = new mongoose.Schema({
     status: { // 文章的状态，
         type: Number,
         enum: [0, 1] // 0 为草稿，1 为发表
-    }
+    },
+    comments: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Comments'
+        }
+    ]
 })
 //  根据规则创建集合
 const Articles = mongoose.model('Articles', articleSchema)

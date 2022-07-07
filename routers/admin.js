@@ -1,16 +1,19 @@
 // 博客管理后台的路由
 const express = require('express')
 const md5 = require('blueimp-md5')
+const mongoose = require('mongoose')
 
 const Users = require('../models/Users')
 const Articles = require('../models/Articles')
 const Categories = require('../models/Categories')
 const Tags = require('../models/Tags')
 const Says = require('../models/Says')
+const Comments = require('../models/comments')
 
 const upload = require('../utils/upload')
 const fs = require("fs");
 const path = require("path");
+const Comment = require("../models/comments");
 // const { userList } = require('../db/index')
 
 // 借用 express 开启路由
@@ -167,7 +170,6 @@ admin.post('/article/add', (req, res) => {
 // 编辑（更新）文章
 admin.post('/article/update', (req, res) => {
     const {article} = req.body
-    console.log(article)
     Articles.findOneAndUpdate({_id: article._id}, article, {}, (err, data) => {
         if (err) {
             console.log('更新文章错误', err)
@@ -436,4 +438,54 @@ admin.post('/users/deleteAvatar', (req, res) => {
         }
     })
 })
+
+
+// 获取评论列表
+admin.get('/comment/list', async (req, res) => {
+
+    // const comments = await Comment.aggregate([
+    //     {
+    //         $group:{
+    //             _id: '$replayId'
+    //         }
+    //     }
+    // ])
+    // console.log('聚合查询', comments)
+    Comments.find({}).populate('aid uid' )
+        .then(comments => {
+            res.send({status: 0, data: comments})
+        })
+        .catch(err => {
+            console.log('获取评论列表失败，请重试', err)
+            res.send({status: 1, msg: '获取评论列表失败，请重试'})
+        })
+})
+
+
+// 审批评论
+admin.post('/comment/verify', async (req, res) => {
+    const {_id, isShow} = req.body
+    Comment.findOneAndUpdate({_id},{isShow: !isShow})
+        .then(comment => {
+            res.send({status: 0, data: comment})
+        })
+        .catch(err => {
+            console.log('审批评论异常，请重试！', err)
+            res.send({status: 1, msg: '审批评论异常，请重试'})
+        })
+})
+
+// 删除评论
+admin.post('/comment/delete', (req, res) => {
+    const {_id} = req.body
+    Comment.findOneAndDelete({_id})
+        .then(comment => {
+            res.send({status: 0})
+        })
+        .catch(err => {
+            console.log('删除评论异常，请重试!', err)
+            res.send({status: 1, msg: '删除评论异常，请重试!'})
+        })
+})
+
 module.exports = admin
