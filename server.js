@@ -41,6 +41,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // 监听端口，开启服务器
-app.listen(3001, () => {
+app.listen(3003, () => {
   console.log('mock的服务器开启了...');
 })
